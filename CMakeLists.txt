@@ -85,7 +85,8 @@ ecm_setup_version(${PROJECT_VERSION} VARIABLE_PREFIX KTAILCTL VERSION_HEADER
 
 find_package(
   Qt6 ${QT6_MIN_VERSION} REQUIRED
-  COMPONENTS Core
+  COMPONENTS Concurrent
+             Core
              Gui
              Qml
              Quick
