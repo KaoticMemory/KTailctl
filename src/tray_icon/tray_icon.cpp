@@ -16,6 +16,7 @@
 #include "tailscale.hpp"
 #include "tray_icon/tray_menu_accounts.hpp"
 #include "tray_icon/tray_menu_exit_nodes.hpp"
+#include "tray_icon/tray_menu_incoming.hpp"
 #include "tray_icon/tray_menu_peers.hpp"
 #include "tray_icon/tray_menu_self.hpp"
 
@@ -26,6 +27,7 @@ TrayIcon::TrayIcon(Tailscale *tailscale, QObject *parent)
     , mMenuAccounts(new TrayMenuAccounts(tailscale))
     , mMenuSelf(new TrayMenuSelf(tailscale))
     , mMenuPeers(new TrayMenuPeers(tailscale))
+    , mMenuIncoming(new TrayMenuIncoming(tailscale))
     , mMenuExitNodes(new TrayMenuExitNodes(tailscale))
     , mActionShow(new QAction(QIcon::fromTheme(QStringLiteral("window")), QStringLiteral("Show")))
     , mActionStart(new QAction(QIcon::fromTheme(QStringLiteral("media-playback-start")), QStringLiteral("Start")))
@@ -38,6 +40,7 @@ TrayIcon::TrayIcon(Tailscale *tailscale, QObject *parent)
     mContextMenu->addMenu(mMenuAccounts);
     mContextMenu->addMenu(mMenuSelf);
     mContextMenu->addMenu(mMenuPeers);
+    mContextMenu->addMenu(mMenuIncoming);
     mContextMenu->addMenu(mMenuExitNodes);
     mContextMenu->addAction(mActionStart);
     mContextMenu->addAction(mActionStop);

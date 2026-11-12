@@ -9,6 +9,7 @@
 
 #include "./tray_menu_accounts.hpp"
 #include "./tray_menu_exit_nodes.hpp"
+#include "./tray_menu_incoming.hpp"
 #include "./tray_menu_peers.hpp"
 #include "./tray_menu_self.hpp"
 #include "tailscale.hpp"
@@ -22,6 +23,7 @@ class TrayIcon : public QSystemTrayIcon
     TrayMenuAccounts *mMenuAccounts;
     TrayMenuSelf *mMenuSelf;
     TrayMenuPeers *mMenuPeers;
+    TrayMenuIncoming *mMenuIncoming;
     TrayMenuExitNodes *mMenuExitNodes;
     QAction *mActionShow;
     QAction *mActionStart;

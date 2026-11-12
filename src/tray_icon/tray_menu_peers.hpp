@@ -16,6 +16,7 @@ class TrayMenuPeers : public QMenu
     bool mRoleIndicesFound = false;
     QString mLastSignature;
     bool mBuilt = false;
+    const int mRoleIndexId = -1;
     const int mRoleIndexHostName = -1;
     const int mRoleIndexMullvadNode = -1;
     const int mRoleIndexDnsName = -1;
