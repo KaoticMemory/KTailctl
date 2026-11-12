@@ -114,6 +114,7 @@ Q_SIGNALS:
     void clientVersionChanged();
     void suggestedExitNodeIdChanged();
     void daemonRunningChanged();
+    void refreshed();
 
 public:
     explicit Status(QObject *parent = nullptr);

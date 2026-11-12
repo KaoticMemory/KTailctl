@@ -28,6 +28,7 @@ endfunction()
 
 add_subdirectory(tailscale)
 add_subdirectory(util)
+add_subdirectory(notifications)
 
 add_ktailctl_test(test_property_list_model
     SOURCES
