@@ -103,6 +103,7 @@ void Status::refresh() // NOLINT(readability-function-cognitive-complexity)
         qCDebug(Logging::Tailscale::Status) << "Emitting exitNodeStatusChanged";
         Q_EMIT exitNodeStatusChanged();
     }
+    Q_EMIT refreshed();
 }
 
 void Status::updateFromJson(QJsonObject &json) // NOLINT(readability-function-cognitive-complexity)

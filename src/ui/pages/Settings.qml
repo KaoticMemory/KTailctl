@@ -66,6 +66,13 @@ FormCard.FormCardPage {
             checked: KTailctl.Config.showTagsInPeerList
             onCheckedChanged: KTailctl.Config.showTagsInPeerList = switchShowTagsInPeerList.checked
         }
+        FormCard.FormSwitchDelegate {
+            id: switchNotifications
+            text: i18n("Notifications")
+            description: i18n("When Tailscale connects, the exit node changes, peers change, or a Taildrop file arrives")
+            checked: KTailctl.Config.enableNotifications
+            onCheckedChanged: KTailctl.Config.enableNotifications = switchNotifications.checked
+        }
     }
 
     FormCard.FormHeader {
