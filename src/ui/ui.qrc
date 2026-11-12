@@ -9,6 +9,7 @@
         <file alias="ui/pages/LoginProfileList.qml">./pages/LoginProfileList.qml</file>
         <file alias="ui/pages/PeerList.qml">./pages/PeerList.qml</file>
         <file alias="ui/pages/PeerInfo.qml">./pages/PeerInfo.qml</file>
+        <file alias="ui/pages/Taildrop.qml">./pages/Taildrop.qml</file>
         <file alias="ui/pages/LoginProfileInfo.qml">./pages/LoginProfileInfo.qml</file>
         <file alias="ui/pages/Settings.qml">./pages/Settings.qml</file>
     </qresource>

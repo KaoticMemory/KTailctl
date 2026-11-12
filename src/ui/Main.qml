@@ -36,6 +36,12 @@ Kirigami.ApplicationWindow {
                 text: i18n("Peers")
             },
             Kirigami.PagePoolAction {
+                icon.name: "document-send"
+                page: "qrc:/ui/pages/Taildrop.qml"
+                pagePool: mainPagePool
+                text: i18n("Taildrop")
+            },
+            Kirigami.PagePoolAction {
                 icon.name: "globe"
                 page: "qrc:/ui/pages/ExitNodeList.qml"
                 pagePool: mainPagePool
@@ -75,6 +81,7 @@ Kirigami.ApplicationWindow {
     Component.onCompleted: {
         mainPagePool.loadPage("qrc:/ui/pages/LoginProfileList.qml");
         mainPagePool.loadPage("qrc:/ui/pages/PeerList.qml");
+        mainPagePool.loadPage("qrc:/ui/pages/Taildrop.qml");
         mainPagePool.loadPage("qrc:/ui/pages/ExitNodeList.qml");
         mainPagePool.loadPage("qrc:/ui/pages/Settings.qml");
         mainPagePool.loadPage("qrc:/ui/pages/About.qml");

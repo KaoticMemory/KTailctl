@@ -1,6 +1,8 @@
 #include "tray_menu_peers.hpp"
 
+#include <KLocalizedString>
 #include <QByteArray>
+#include <QFileDialog>
 #include <QIcon>
 #include <QList>
 #include <QLoggingCategory>
@@ -9,11 +11,13 @@
 #include <QString>
 #include <QStringList>
 #include <QStringLiteral>
+#include <QTimer>
 #include <QVariant>
 #include <qobject.h>
 #include <utility>
 
 #include "logging_tray_icon.hpp"
+#include "taildrop.hpp"
 #include "status.hpp"
 #include "tailscale.hpp"
 #include "tray_icon/tray_menu_util.hpp"
@@ -23,6 +27,7 @@ TrayMenuPeers::TrayMenuPeers(Tailscale *tailscale, QWidget *parent)
     : QMenu(QStringLiteral("Peers"), parent)
     , mTailscale(tailscale)
     , mRoleIndicesFound(true)
+    , mRoleIndexId(tailscale->status()->peerModel()->roleIndexForProperty("id"))
     , mRoleIndexHostName(tailscale->status()->peerModel()->roleIndexForProperty("hostName"))
     , mRoleIndexMullvadNode(tailscale->status()->peerModel()->roleIndexForProperty("mullvadNode"))
     , mRoleIndexDnsName(tailscale->status()->peerModel()->roleIndexForProperty("dnsName"))
@@ -30,6 +35,10 @@ TrayMenuPeers::TrayMenuPeers(Tailscale *tailscale, QWidget *parent)
     , mRoleIndexOs(tailscale->status()->peerModel()->roleIndexForProperty("os"))
 {
     setIcon(QIcon::fromTheme(QStringLiteral("distribute-graph-directed")));
+    if (mRoleIndexId == -1) {
+        qCCritical(Logging::TrayIcon) << "Failed to find role index for id";
+        mRoleIndicesFound = false;
+    }
     if (mRoleIndexHostName == -1) {
         qCCritical(Logging::TrayIcon) << "Failed to find role index for hostName";
         mRoleIndicesFound = false;
@@ -55,6 +64,11 @@ TrayMenuPeers::TrayMenuPeers(Tailscale *tailscale, QWidget *parent)
         rebuildMenu();
     });
     TrayMenuUtil::rebuildOnModelChange(mTailscale->status()->peerModel(), timer);
+    connect(mTailscale->taildrop(), &Taildrop::fileTargetIdsChanged, this, [this] {
+        if (!isVisible()) {
+            rebuildMenu();
+        }
+    });
     rebuildMenu();
 }
 
@@ -65,10 +79,12 @@ void TrayMenuPeers::rebuildMenu()
     }
 
     struct Entry {
+        QString id;
         QString title;
         QString os;
         QString dnsName;
         QStringList addresses;
+        bool canSend = false;
     };
     QList<Entry> entries;
     QString signature;
@@ -82,12 +98,15 @@ void TrayMenuPeers::rebuildMenu()
         if (index.data(mRoleIndexMullvadNode).toBool()) {
             continue;
         }
-        Entry entry{.title = index.data(mRoleIndexHostName).toString(),
+        Entry entry{.id = index.data(mRoleIndexId).toString(),
+                    .title = index.data(mRoleIndexHostName).toString(),
                     .os = index.data(mRoleIndexOs).toString().toLower(),
                     .dnsName = index.data(mRoleIndexDnsName).toString(),
-                    .addresses = index.data(mRoleIndexTailscaleIps).toStringList()};
-        signature += entry.title + QLatin1Char('\x1f') + entry.os + QLatin1Char('\x1f') + entry.dnsName + QLatin1Char('\x1f')
-            + entry.addresses.join(QLatin1Char(',')) + QLatin1Char('\x1e');
+                    .addresses = index.data(mRoleIndexTailscaleIps).toStringList(),
+                    .canSend = mTailscale->taildrop()->fileTargetIds().contains(index.data(mRoleIndexId).toString())};
+        signature += entry.id + QLatin1Char('\x1f') + entry.title + QLatin1Char('\x1f') + entry.os + QLatin1Char('\x1f') + entry.dnsName
+            + QLatin1Char('\x1f') + entry.addresses.join(QLatin1Char(',')) + QLatin1Char('\x1f') + (entry.canSend ? QStringLiteral("1") : QStringLiteral("0"))
+            + QLatin1Char('\x1e');
         entries.append(std::move(entry));
     }
 
@@ -121,5 +140,22 @@ void TrayMenuPeers::rebuildMenu()
                 Util::setClipboardText(address);
             });
         }
+
+        const QString peerId = entry.id;
+        const QString hostName = entry.title;
+        QAction *sendAction = subMenu->addAction(QIcon::fromTheme(QStringLiteral("document-send")),
+                                                 i18nc("@action:inmenu", "Send file…"),
+                                                 this,
+                                                 [this, peerId, hostName] {
+                                                     QTimer::singleShot(0, this, [this, peerId, hostName] {
+                                                         const QStringList files = QFileDialog::getOpenFileNames(
+                                                             nullptr,
+                                                             i18nc("@title:window", "Send files to %1", hostName));
+                                                         if (!files.isEmpty()) {
+                                                             mTailscale->taildrop()->sendLocalFiles(peerId, files);
+                                                         }
+                                                     });
+                                                 });
+        sendAction->setEnabled(entry.canSend);
     }
 }

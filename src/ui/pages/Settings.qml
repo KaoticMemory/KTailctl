@@ -1,4 +1,5 @@
 import QtQuick.Controls
+import QtQuick.Dialogs
 import QtQuick.Layouts
 import QtQuick
 import QtQml.Models
@@ -66,6 +67,19 @@ FormCard.FormCardPage {
             checked: KTailctl.Config.showTagsInPeerList
             onCheckedChanged: KTailctl.Config.showTagsInPeerList = switchShowTagsInPeerList.checked
         }
+        FormCard.FormButtonDelegate {
+            text: i18n("Taildrop download folder")
+            description: KTailctl.Tailscale.taildrop.downloadDirectory
+            icon.name: "folder-downloads"
+            onClicked: taildropFolderDialog.open()
+        }
+    }
+
+    FolderDialog {
+        id: taildropFolderDialog
+        title: i18n("Taildrop download folder")
+        currentFolder: KTailctl.Tailscale.taildrop.downloadDirectoryUrl
+        onAccepted: KTailctl.Tailscale.taildrop.setDownloadDirectory(selectedFolder)
     }
 
     FormCard.FormHeader {

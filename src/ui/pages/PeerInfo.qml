@@ -3,6 +3,7 @@ import org.fkoehler.KTailctl as KTailctl
 import org.kde.kirigami as Kirigami
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Dialogs
 import QtQuick.Layouts
 import "qrc:/ui/components"
 
@@ -12,7 +13,19 @@ FormCard.FormCardPage {
 
     title: peer?.hostName ?? ""
 
+    readonly property bool canOfferTaildrop: (peer?.id ?? "") !== "" && peer.id !== (KTailctl.Tailscale.status.self?.id ?? "")
+    readonly property bool canSendTaildrop: canOfferTaildrop && KTailctl.Tailscale.taildrop.fileTargetIds.indexOf(peer.id) >= 0
+    readonly property bool showTaildropStatus: canOfferTaildrop && KTailctl.Tailscale.taildrop.activePeerId === peer.id && KTailctl.Tailscale.taildrop.statusMessage !== ""
+
     signal closeRequested
+
+    FileDialog {
+        id: sendDialog
+        title: i18n("Send files to %1", page.peer?.hostName ?? "")
+        fileMode: FileDialog.OpenFiles
+        currentFolder: KTailctl.Tailscale.taildrop.downloadDirectoryUrl
+        onAccepted: KTailctl.Tailscale.taildrop.sendFiles(page.peer.id, selectedFiles)
+    }
 
     actions: [
         Kirigami.Action {
@@ -27,6 +40,44 @@ FormCard.FormCardPage {
     OperatorWarning {}
 
     AuthError {}
+
+    FormCard.FormHeader {
+        visible: page.canOfferTaildrop
+        title: i18n("Taildrop")
+    }
+
+    FormCard.FormCard {
+        visible: page.canOfferTaildrop
+
+        DropArea {
+            id: taildropDrop
+            width: parent.width
+            height: sendFilesButton.implicitHeight
+            enabled: page.canSendTaildrop && !KTailctl.Tailscale.taildrop.busy
+            onDropped: drop => {
+                if (drop.hasUrls) {
+                    KTailctl.Tailscale.taildrop.sendFiles(page.peer.id, drop.urls);
+                }
+            }
+
+            FormCard.FormButtonDelegate {
+                id: sendFilesButton
+                width: parent.width
+                enabled: page.canSendTaildrop && !KTailctl.Tailscale.taildrop.busy
+                text: taildropDrop.containsDrag ? i18n("Drop to send") : i18n("Send files")
+                description: page.canSendTaildrop ? i18n("Choose files or drop them here") : ((page.peer.noFileSharingReason ?? "") !== "" ? page.peer.noFileSharingReason : i18n("This peer cannot receive files right now"))
+                icon.name: "document-send"
+                onClicked: sendDialog.open()
+            }
+        }
+    }
+
+    Kirigami.InlineMessage {
+        Layout.fillWidth: true
+        visible: page.showTaildropStatus
+        type: KTailctl.Tailscale.taildrop.lastError !== "" ? Kirigami.MessageType.Error : Kirigami.MessageType.Information
+        text: KTailctl.Tailscale.taildrop.statusMessage
+    }
 
     FormCard.FormHeader {
         title: "Addresses"

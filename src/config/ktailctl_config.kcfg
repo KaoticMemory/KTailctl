@@ -30,6 +30,10 @@
           <label>Last used exit node</label>
           <default></default>
       </entry>
+      <entry name="taildropDownloadDirectory" type="String">
+          <label>Folder accepted Taildrop files are saved to. Empty uses the Downloads folder.</label>
+          <default></default>
+      </entry>
   </group>
   <group name="Debugging">
       <entry name="verboseLogging" type="Bool">

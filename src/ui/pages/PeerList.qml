@@ -260,6 +260,20 @@ Kirigami.ScrollablePage {
             OperatorWarning {}
             AuthError {}
 
+            Kirigami.InlineMessage {
+                Layout.fillWidth: true
+                visible: KTailctl.Tailscale.taildrop.waitingFileCount > 0
+                type: Kirigami.MessageType.Information
+                text: i18np("1 file is waiting to be saved", "%1 files are waiting to be saved", KTailctl.Tailscale.taildrop.waitingFileCount)
+                actions: [
+                    Kirigami.Action {
+                        icon.name: "document-send"
+                        text: i18n("Show")
+                        onTriggered: applicationWindow().pageStack.push("qrc:/ui/pages/Taildrop.qml")
+                    }
+                ]
+            }
+
             Kirigami.ListSectionHeader {
                 Layout.fillWidth: true
                 text: "This Node"
