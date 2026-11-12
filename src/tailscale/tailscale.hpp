@@ -14,6 +14,7 @@
 #include <qttypetraits.h>
 
 #include "ktailctl_config.h"
+#include "ping/peer_ping.hpp"
 #include "preferences/preferences.hpp"
 #include "property_list_model.hpp"
 #include "status/login_profile.hpp"
@@ -50,6 +51,7 @@ public:
 
     Q_PROPERTY(Status *status READ status CONSTANT)
     Q_PROPERTY(Preferences *preferences READ preferences CONSTANT)
+    Q_PROPERTY(PeerPing *peerPing READ peerPing CONSTANT)
     Q_PROPERTY(LoginProfileModel *loginProfiles READ loginProfileModel CONSTANT)
     Q_PROPERTY(QString currentLoginProfileId READ currentLoginProfileId BINDABLE bindableCurrentLoginProfileId NOTIFY currentLoginProfileIdChanged)
 
@@ -61,6 +63,7 @@ private:
 
     Status *mStatus;
     Preferences *mPreferences;
+    PeerPing *mPeerPing;
     QMap<QString, LoginProfile *> mLoginProfiles;
     LoginProfileModel *mLoginProfileModel;
     QTimer *mRefreshTimer;
@@ -71,6 +74,7 @@ public:
         : QObject(parent)
         , mStatus(new Status(this))
         , mPreferences(new Preferences(this))
+        , mPeerPing(new PeerPing(this, this))
         , mLoginProfileModel(new LoginProfileModel(this))
         , mRefreshTimer(new QTimer(this))
     {
@@ -96,6 +100,11 @@ public:
     [[nodiscard]] auto preferences() const noexcept -> Preferences *
     {
         return mPreferences;
+    }
+
+    [[nodiscard]] auto peerPing() const noexcept -> PeerPing *
+    {
+        return mPeerPing;
     }
 
     [[nodiscard]] auto loginProfileModel() const noexcept -> LoginProfileModel *
