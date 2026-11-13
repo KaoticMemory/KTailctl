@@ -14,10 +14,12 @@
 #include <qttypetraits.h>
 
 #include "ktailctl_config.h"
+#include "ping/peer_ping.hpp"
 #include "preferences/preferences.hpp"
 #include "property_list_model.hpp"
 #include "status/login_profile.hpp"
 #include "status/status.hpp"
+#include "taildrop/taildrop.hpp"
 
 using LoginProfileModelBase = PropertyListModel<LoginProfile, PropertyListModelOwnership::External>;
 
@@ -50,6 +52,8 @@ public:
 
     Q_PROPERTY(Status *status READ status CONSTANT)
     Q_PROPERTY(Preferences *preferences READ preferences CONSTANT)
+    Q_PROPERTY(Taildrop *taildrop READ taildrop CONSTANT)
+    Q_PROPERTY(PeerPing *peerPing READ peerPing CONSTANT)
     Q_PROPERTY(LoginProfileModel *loginProfiles READ loginProfileModel CONSTANT)
     Q_PROPERTY(QString currentLoginProfileId READ currentLoginProfileId BINDABLE bindableCurrentLoginProfileId NOTIFY currentLoginProfileIdChanged)
 
@@ -61,6 +65,8 @@ private:
 
     Status *mStatus;
     Preferences *mPreferences;
+    Taildrop *mTaildrop;
+    PeerPing *mPeerPing;
     QMap<QString, LoginProfile *> mLoginProfiles;
     LoginProfileModel *mLoginProfileModel;
     QTimer *mRefreshTimer;
@@ -71,6 +77,8 @@ public:
         : QObject(parent)
         , mStatus(new Status(this))
         , mPreferences(new Preferences(this))
+        , mTaildrop(new Taildrop(this))
+        , mPeerPing(new PeerPing(this, this))
         , mLoginProfileModel(new LoginProfileModel(this))
         , mRefreshTimer(new QTimer(this))
     {
@@ -78,6 +86,8 @@ public:
 
         mRefreshTimer->setInterval(Config::refreshInterval());
         connect(mRefreshTimer, &QTimer::timeout, this, [this] {
+            // Refresh Taildrop first so the status signal sees the current waiting files.
+            mTaildrop->refresh();
             mStatus->refresh();
             mPreferences->refresh();
             refreshLoginProfiles();
@@ -96,6 +106,16 @@ public:
     [[nodiscard]] auto preferences() const noexcept -> Preferences *
     {
         return mPreferences;
+    }
+
+    [[nodiscard]] auto taildrop() const noexcept -> Taildrop *
+    {
+        return mTaildrop;
+    }
+
+    [[nodiscard]] auto peerPing() const noexcept -> PeerPing *
+    {
+        return mPeerPing;
     }
 
     [[nodiscard]] auto loginProfileModel() const noexcept -> LoginProfileModel *

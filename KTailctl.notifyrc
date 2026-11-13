@@ -14,12 +14,54 @@ Comment=Status of Tailscale
 Name=Peer
 Comment=Status of a Tailscale peer
 
+[Context/taildrop]
+Name=Taildrop
+Comment=Incoming Taildrop files
+
 [Event/down]
-Name=Tailscale offline
-Comment=Tailscale is now offline
+Name=Tailscale disconnected
+Comment=Tailscale is now disconnected
 Contexts=status
+Action=Popup
 
 [Event/up]
-Name=Tailscale online
-Comment=Tailscale is now online
+Name=Tailscale connected
+Comment=Tailscale is now connected
 Contexts=status
+Action=Popup
+
+[Event/exitNode]
+Name=Exit node changed
+Comment=The selected exit node changed
+Contexts=status
+Action=Popup
+
+[Event/peerAdded]
+Name=Peer added
+Comment=A peer was added to the tailnet
+Contexts=peer
+Action=Popup
+
+[Event/peerRemoved]
+Name=Peer removed
+Comment=A peer was removed from the tailnet
+Contexts=peer
+Action=Popup
+
+[Event/peerOnline]
+Name=Peer online
+Comment=A peer came online
+Contexts=peer
+Action=Popup
+
+[Event/peerOffline]
+Name=Peer offline
+Comment=A peer went offline
+Contexts=peer
+Action=Popup
+
+[Event/taildropFile]
+Name=Incoming file
+Comment=A file was received via Taildrop
+Contexts=taildrop
+Action=Popup

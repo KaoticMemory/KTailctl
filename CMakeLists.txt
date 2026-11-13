@@ -85,7 +85,8 @@ ecm_setup_version(${PROJECT_VERSION} VARIABLE_PREFIX KTAILCTL VERSION_HEADER
 
 find_package(
   Qt6 ${QT6_MIN_VERSION} REQUIRED
-  COMPONENTS Core
+  COMPONENTS Concurrent
+             Core
              Gui
              Qml
              Quick
@@ -126,6 +127,7 @@ if(KTAILCTL_ENABLE_TESTS)
 endif()
 
 install(PROGRAMS org.fkoehler.KTailctl.desktop DESTINATION ${KDE_INSTALL_APPDIR})
+install(FILES KTailctl.notifyrc DESTINATION ${KDE_INSTALL_KNOTIFYRCDIR})
 install(FILES org.fkoehler.KTailctl.metainfo.xml DESTINATION ${KDE_INSTALL_METAINFODIR})
 install(FILES org.fkoehler.KTailctl.svg DESTINATION ${KDE_INSTALL_FULL_ICONDIR}/hicolor/scalable/apps)
 

@@ -30,6 +30,7 @@
 
 #include "config/config_auto_save.hpp"
 #include "ktailctl_config.h"
+#include "notifications/notifier.hpp"
 #include "logging_tailscale.hpp"
 #include "tailscale/tailscale.hpp"
 #include "tray_icon/tray_icon.hpp"
@@ -140,6 +141,7 @@ auto main(int argc, char *argv[]) -> int
     }
 
     // clicking tray icon should toggle window
+    auto *notifier = new Notifier(tailscale, tailscale);
     auto *tray_icon = new TrayIcon(tailscale);
     tray_icon->setVisible(Config::enableTrayIcon());
     QObject::connect(tray_icon, &QSystemTrayIcon::activated, tray_icon, [window](const QSystemTrayIcon::ActivationReason &reason) {
@@ -165,6 +167,14 @@ auto main(int argc, char *argv[]) -> int
         window->show();
     });
     QObject::connect(tray_icon, &TrayIcon::quitRequested, &app, &QCoreApplication::quit, Qt::QueuedConnection);
+    QObject::connect(notifier, &Notifier::openRequested, window, [window] {
+        if (window == nullptr) {
+            return;
+        }
+        window->show();
+        window->raise();
+        KWindowSystem::activateWindow(window);
+    });
 
     // re-launching the unique instance should reveal and focus the window
     QObject::connect(&service, &KDBusService::activateRequested, window, [window](const QStringList &, const QString &) {

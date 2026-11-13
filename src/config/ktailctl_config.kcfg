@@ -26,8 +26,16 @@
           <label>Whether to show tags in the peer list</label>
           <default>false</default>
       </entry>
+      <entry name="enableNotifications" type="Bool">
+          <label>Show notifications for Tailscale status changes, peer changes, and incoming Taildrop files</label>
+          <default>true</default>
+      </entry>
       <entry name="lastUsedExitNode" type="String">
           <label>Last used exit node</label>
+          <default></default>
+      </entry>
+      <entry name="taildropDownloadDirectory" type="String">
+          <label>Folder accepted Taildrop files are saved to. Empty uses the Downloads folder.</label>
           <default></default>
       </entry>
   </group>
