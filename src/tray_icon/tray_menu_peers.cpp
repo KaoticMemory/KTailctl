@@ -17,10 +17,13 @@
 #include <utility>
 
 #include "logging_tray_icon.hpp"
+#include "peer_ping.hpp"
+#include "ping_result.hpp"
 #include "taildrop.hpp"
 #include "status.hpp"
 #include "tailscale.hpp"
 #include "tray_icon/tray_menu_util.hpp"
+#include "tray_ping_dialog.hpp"
 #include "util.hpp"
 
 TrayMenuPeers::TrayMenuPeers(Tailscale *tailscale, QWidget *parent)
@@ -157,5 +160,16 @@ void TrayMenuPeers::rebuildMenu()
                                                      });
                                                  });
         sendAction->setEnabled(entry.canSend);
+        const QString pingAddress = selectPingAddress(entry.addresses);
+        QAction *pingAction = subMenu->addAction(QIcon::fromTheme(QStringLiteral("network-connect")),
+                                                 i18nc("@action:inmenu", "Ping"),
+                                                 this,
+                                                 [this, peerId, hostName, pingAddress] {
+                                                     auto *dialog = new TrayPingDialog(mTailscale->peerPing(),
+                                                                                        {.peerId = peerId, .hostName = hostName, .address = pingAddress});
+                                                     dialog->start();
+                                                     dialog->show();
+                                                 });
+        pingAction->setEnabled(!pingAddress.isEmpty());
     }
 }

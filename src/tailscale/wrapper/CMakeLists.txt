@@ -111,7 +111,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   add_custom_command(
     OUTPUT ${KTAILCTL_WRAPPER_LIBRARY} ${KTAILCTL_WRAPPER_HEADER}
     COMMAND GOEXPERIMENT=cgocheck2 ${GO_EXECUTABLE} build -v -trimpath -mod vendor -o ${KTAILCTL_WRAPPER_LIBRARY}
-            -buildmode=c-archive wrapper.go options.go callbacks.go logging.go files.go
+            -buildmode=c-archive wrapper.go options.go callbacks.go logging.go files.go ping.go
     MAIN_DEPENDENCY wrapper.go
     DEPENDS go.mod
             "${_go_vendor_dep}"
@@ -120,13 +120,14 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
             callbacks.go
             logging.go
             files.go
+            ping.go
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     COMMENT "Building KTailctl wrapper library (Debug)")
 else()
   add_custom_command(
     OUTPUT ${KTAILCTL_WRAPPER_LIBRARY} ${KTAILCTL_WRAPPER_HEADER}
     COMMAND ${GO_EXECUTABLE} build -v -trimpath -mod vendor -o ${KTAILCTL_WRAPPER_LIBRARY} -buildmode=c-archive
-            wrapper.go options.go callbacks.go logging.go files.go
+            wrapper.go options.go callbacks.go logging.go files.go ping.go
     MAIN_DEPENDENCY wrapper.go
     DEPENDS go.mod
             "${_go_vendor_dep}"
@@ -135,6 +136,7 @@ else()
             callbacks.go
             logging.go
             files.go
+            ping.go
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     COMMENT "Building KTailctl wrapper library")
 endif()

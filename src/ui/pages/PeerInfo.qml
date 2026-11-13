@@ -16,6 +16,8 @@ FormCard.FormCardPage {
     readonly property bool canOfferTaildrop: (peer?.id ?? "") !== "" && peer.id !== (KTailctl.Tailscale.status.self?.id ?? "")
     readonly property bool canSendTaildrop: canOfferTaildrop && KTailctl.Tailscale.taildrop.fileTargetIds.indexOf(peer.id) >= 0
     readonly property bool showTaildropStatus: canOfferTaildrop && KTailctl.Tailscale.taildrop.activePeerId === peer.id && KTailctl.Tailscale.taildrop.statusMessage !== ""
+    readonly property bool canPing: (peer?.id ?? "") !== "" && peer.id !== (KTailctl.Tailscale.status.self?.id ?? "")
+    readonly property bool showPingResult: canPing && KTailctl.Tailscale.peerPing.peerId === peer.id && KTailctl.Tailscale.peerPing.hasResult
 
     signal closeRequested
 
@@ -209,6 +211,23 @@ FormCard.FormCardPage {
             url: (peer?.tailscaleIps?.length ?? 0) > 0 ? "https://login.tailscale.com/admin/machines/" + peer.tailscaleIps[0] : "https://login.tailscale.com/admin/machines/"
             text: adminPanelUrl.url
             description: "Admin Panel"
+        }
+    }
+
+    FormCard.FormHeader {
+        visible: page.canPing
+        title: i18n("Ping")
+    }
+
+    FormCard.FormCard {
+        visible: page.canPing
+
+        FormCard.FormButtonDelegate {
+            enabled: !KTailctl.Tailscale.peerPing.running
+            text: KTailctl.Tailscale.peerPing.running && KTailctl.Tailscale.peerPing.peerId === page.peer.id ? i18n("Pinging… (attempt %1 of %2)", KTailctl.Tailscale.peerPing.attempt, KTailctl.Tailscale.peerPing.maxAttempts) : i18n("Ping")
+            description: page.showPingResult ? KTailctl.Tailscale.peerPing.result.summary : i18n("Measure latency and whether the path is direct or relayed")
+            icon.name: "network-connect"
+            onClicked: KTailctl.Tailscale.peerPing.pingPeer(page.peer.id)
         }
     }
 

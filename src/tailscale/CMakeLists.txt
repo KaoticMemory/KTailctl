@@ -2,6 +2,7 @@ add_subdirectory(status)
 add_subdirectory(wrapper)
 add_subdirectory(preferences)
 add_subdirectory(taildrop)
+add_subdirectory(ping)
 
 ecm_qt_declare_logging_category(
   ktailctl

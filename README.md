@@ -28,6 +28,7 @@ KTailctl is a GUI for monitoring and managing [Tailscale](https://tailscale.com)
 - Configurable Tailscale preferences: hostname, SSH server, shields-up mode, DNS, routing, LAN access, stateful filtering, netfilter mode, posture checking, web management interface, and more
 - Primary routes display per peer
 - Adjustable refresh interval and startup behavior
+- Ping a peer from the peer details page or the system tray, with latency and whether the path is direct or via a DERP relay
 - Taildrop: send files to a peer from the peer page (file picker or drag-and-drop) or the tray, and save or delete incoming files (default folder is `~/Downloads`)
 
 ### Planned
@@ -36,7 +37,6 @@ These features are planned for the future (no particular order):
 
 - Speed graphs
 - Internationalization support
-- Ping peers from the UI
 - Notifications on Tailscale status changes and peer additions/removals
 
 > **Note:** To enable Tailscale preference changes and certain actions, register yourself as the operator first: `tailscale up --operator=$USER`
