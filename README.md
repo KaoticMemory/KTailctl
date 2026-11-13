@@ -30,6 +30,7 @@ KTailctl is a GUI for monitoring and managing [Tailscale](https://tailscale.com)
 - Adjustable refresh interval and startup behavior
 - Ping a peer from the peer details page or the system tray, with latency and whether the path is direct or via a DERP relay
 - Taildrop: send files to a peer from the peer page (file picker or drag-and-drop) or the tray, and save or delete incoming files (default folder is `~/Downloads`)
+- Notifications when Tailscale connects or disconnects, the exit node changes, peers are added, removed, or change online state, and when a Taildrop file arrives (configurable in Plasma's notification settings and with an in-app switch)
 
 ### Planned
 
@@ -37,7 +38,6 @@ These features are planned for the future (no particular order):
 
 - Speed graphs
 - Internationalization support
-- Notifications on Tailscale status changes and peer additions/removals
 
 > **Note:** To enable Tailscale preference changes and certain actions, register yourself as the operator first: `tailscale up --operator=$USER`
 

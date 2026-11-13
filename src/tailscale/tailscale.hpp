@@ -86,10 +86,11 @@ public:
 
         mRefreshTimer->setInterval(Config::refreshInterval());
         connect(mRefreshTimer, &QTimer::timeout, this, [this] {
+            // Refresh Taildrop first so the status signal sees the current waiting files.
+            mTaildrop->refresh();
             mStatus->refresh();
             mPreferences->refresh();
             refreshLoginProfiles();
-            mTaildrop->refresh();
         });
         connect(Config::self(), &Config::refreshIntervalChanged, this, [this] {
             mRefreshTimer->setInterval(Config::refreshInterval());

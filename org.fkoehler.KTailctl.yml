@@ -12,6 +12,7 @@ finish-args:
   - --share=network
   - --talk-name=org.kde.StatusNotifierWatcher
   - --filesystem=/run/tailscale:ro
+  - --filesystem=xdg-download
 build-options:
   env:
     GOTOOLCHAIN: local
